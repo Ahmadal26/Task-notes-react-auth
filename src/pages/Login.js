@@ -1,33 +1,24 @@
-import { useMutation } from "@tanstack/react-query";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { login } from "../api/auth";
+import { useMutation } from "@tanstack/react-query";
+import { useContext } from "react";
 import UserContext from "../context/UserContext";
-import { Navigate } from "react-router-dom";
 
 const Login = () => {
   const [userInfo, setUserInfo] = useState({});
-
+  const [user, setUser] = useContext(UserContext);
+  const { mutate: loginFn } = useMutation({
+    mutationFn: () => login(userInfo),
+    onSuccess: () => setUser(true),
+  });
   const handleChange = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const [user, setUser] = useContext(UserContext);
-
-  const { mutate: loginFun } = useMutation({
-    mutationFn: () => login(userInfo),
-    onSuccess: () => {
-      setUser(true);
-    },
-  });
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    loginFun();
     // Add login logic here
+    loginFn();
   };
-  if (user) {
-    return <Navigate to="/" />;
-  }
-
-  // useEffect(() => {}, []);
 
   return (
     <div className="bg-gray-900 min-h-screen flex items-center justify-center absolute inset-0 z-[-1]">
